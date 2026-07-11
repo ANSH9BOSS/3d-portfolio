@@ -1,29 +1,13 @@
-import { useEffect, useRef } from "react";
+import { useState } from "react";
 import "./styles/WhatIDo.css";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 const WhatIDo = () => {
-  const containerRef = useRef<(HTMLDivElement | null)[]>([]);
-  const setRef = (el: HTMLDivElement | null, index: number) => {
-    containerRef.current[index] = el;
+  const [activeBox, setActiveBox] = useState<number | null>(null);
+
+  const handleBoxClick = (index: number) => {
+    setActiveBox((prev) => (prev === index ? null : index));
   };
-  useEffect(() => {
-    if (ScrollTrigger.isTouch) {
-      containerRef.current.forEach((container) => {
-        if (container) {
-          container.classList.remove("what-noTouch");
-          container.addEventListener("click", () => handleClick(container));
-        }
-      });
-    }
-    return () => {
-      containerRef.current.forEach((container) => {
-        if (container) {
-          container.removeEventListener("click", () => handleClick(container));
-        }
-      });
-    };
-  }, []);
+
   return (
     <div className="whatIDO">
       <div className="what-box">
@@ -58,9 +42,12 @@ const WhatIDo = () => {
               />
             </svg>
           </div>
+
           <div
-            className="what-content what-noTouch"
-            ref={(el) => setRef(el, 0)}
+            className={`what-content ${activeBox === 0 ? "what-content-active" : ""} ${
+              activeBox !== null && activeBox !== 0 ? "what-sibling" : ""
+            }`}
+            onClick={() => handleBoxClick(0)}
           >
             <div className="what-border1">
               <svg height="100%">
@@ -87,27 +74,29 @@ const WhatIDo = () => {
             <div className="what-corner"></div>
 
             <div className="what-content-in">
-              <h3>AI & AUTOMATION</h3>
-              <h4>Workflow Intelligence for Organizations</h4>
+              <h3>AI &amp; AUTOMATION</h3>
+              <h4>Autonomous &amp; Custom AI Solutions</h4>
               <p>
-                AI specialist helping organizations automate workflows—internal ops
-                and customer-facing—so teams ship faster with less manual work.
+                Developing advanced AI platforms like Skript Builder AI, fine-tuned to compile optimized code templates, audit syntax trees, and automate server deployment scripts.
               </p>
-              <h5>Skillset & tools</h5>
+              <h5>Skillset &amp; tools</h5>
               <div className="what-content-flex">
-                <div className="what-tags">LLMs &amp; agents</div>
-                <div className="what-tags">Workflow design</div>
-                <div className="what-tags">RAG &amp; retrieval</div>
-                <div className="what-tags">Evals &amp; guardrails</div>
-                <div className="what-tags">Integrations</div>
-                <div className="what-tags">Product strategy</div>
+                <div className="what-tags">Next.js</div>
+                <div className="what-tags">React</div>
+                <div className="what-tags">Vercel AI SDK</div>
+                <div className="what-tags">Python</div>
+                <div className="what-tags">Node.js</div>
+                <div className="what-tags">Large Language Models</div>
               </div>
               <div className="what-arrow"></div>
             </div>
           </div>
+
           <div
-            className="what-content what-noTouch"
-            ref={(el) => setRef(el, 1)}
+            className={`what-content ${activeBox === 1 ? "what-content-active" : ""} ${
+              activeBox !== null && activeBox !== 1 ? "what-sibling" : ""
+            }`}
+            onClick={() => handleBoxClick(1)}
           >
             <div className="what-border1">
               <svg height="100%">
@@ -124,21 +113,19 @@ const WhatIDo = () => {
             </div>
             <div className="what-corner"></div>
             <div className="what-content-in">
-              <h3>BUILD &amp; SCALE</h3>
-              <h4>Shipping AI in Production</h4>
+              <h3>SYSTEMS &amp; SECURITY</h3>
+              <h4>Game Protection &amp; Virtualization</h4>
               <p>
-                I build the systems behind it: APIs, data, voice/real-time, and
-                full-stack products—production-ready, not slide decks.
+                Building low-level hooking mechanics (Java NMS/Netty pipelines), double-sided anti-cheat programs (Stitch Analyzer), and high-availability Pterodactyl WHMCS virtualization architectures (Quorox Cloud).
               </p>
-              <h5>Skillset & tools</h5>
+              <h5>Skillset &amp; tools</h5>
               <div className="what-content-flex">
-                <div className="what-tags">Node.js</div>
-                <div className="what-tags">Python</div>
-                <div className="what-tags">REST &amp; real-time APIs</div>
-                <div className="what-tags">PostgreSQL</div>
-                <div className="what-tags">MongoDB</div>
-                <div className="what-tags">React</div>
-                <div className="what-tags">Cloud &amp; infra</div>
+                <div className="what-tags">Docker &amp; WHMCS</div>
+                <div className="what-tags">Pterodactyl &amp; Wings</div>
+                <div className="what-tags">Java NMS &amp; Netty</div>
+                <div className="what-tags">Electron</div>
+                <div className="what-tags">React Native</div>
+                <div className="what-tags">GSAP &amp; WebGL</div>
               </div>
               <div className="what-arrow"></div>
             </div>
@@ -150,18 +137,3 @@ const WhatIDo = () => {
 };
 
 export default WhatIDo;
-
-function handleClick(container: HTMLDivElement) {
-  container.classList.toggle("what-content-active");
-  container.classList.remove("what-sibling");
-  if (container.parentElement) {
-    const siblings = Array.from(container.parentElement.children);
-
-    siblings.forEach((sibling) => {
-      if (sibling !== container) {
-        sibling.classList.remove("what-content-active");
-        sibling.classList.toggle("what-sibling");
-      }
-    });
-  }
-}

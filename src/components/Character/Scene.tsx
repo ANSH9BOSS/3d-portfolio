@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import * as THREE from "three";
 import setCharacter from "./utils/character";
 import setLighting from "./utils/lighting";
@@ -19,8 +19,8 @@ const Scene = () => {
   const sceneRef = useRef(new THREE.Scene());
   const { setLoading } = useLoading();
 
-  const [character, setChar] = useState<THREE.Object3D | null>(null);
   useEffect(() => {
+    let isMounted = true;
     if (canvasDiv.current) {
       let rect = canvasDiv.current.getBoundingClientRect();
       let container = { width: rect.width, height: rect.height };
@@ -32,7 +32,7 @@ const Scene = () => {
         antialias: true,
       });
       renderer.setSize(container.width, container.height);
-      renderer.setPixelRatio(window.devicePixelRatio);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
       renderer.toneMapping = THREE.ACESFilmicToneMapping;
       renderer.toneMappingExposure = 1;
       canvasDiv.current.appendChild(renderer.domElement);
@@ -53,25 +53,33 @@ const Scene = () => {
       let progress = setProgress((value) => setLoading(value));
       const { loadCharacter } = setCharacter(renderer, scene, camera);
 
+      let activeChar: THREE.Object3D | null = null;
+      const onResize = () => {
+        if (activeChar) {
+          handleResize(renderer, camera, canvasDiv, activeChar);
+        }
+      };
+
       loadCharacter().then((gltf) => {
+        if (!isMounted) return;
         if (gltf) {
           const animations = setAnimations(gltf);
           hoverDivRef.current && animations.hover(gltf, hoverDivRef.current);
           mixer = animations.mixer;
           let character = gltf.scene;
-          setChar(character);
+          activeChar = character;
           scene.add(character);
           headBone = character.getObjectByName("spine006") || null;
           screenLight = character.getObjectByName("screenlight") || null;
           progress.loaded().then(() => {
+            if (!isMounted) return;
             setTimeout(() => {
+              if (!isMounted) return;
               light.turnOnLights();
               animations.startIntro();
             }, 2500);
           });
-          window.addEventListener("resize", () =>
-            handleResize(renderer, camera, canvasDiv, character)
-          );
+          window.addEventListener("resize", onResize);
         }
       });
 
@@ -82,13 +90,12 @@ const Scene = () => {
         handleMouseMove(event, (x, y) => (mouse = { x, y }));
       };
       let debounce: number | undefined;
-      const onTouchStart = (event: TouchEvent) => {
-        const element = event.target as HTMLElement;
-        debounce = setTimeout(() => {
-          element?.addEventListener("touchmove", (e: TouchEvent) =>
-            handleTouchMove(e, (x, y) => (mouse = { x, y }))
-          );
-        }, 200);
+      const onTouchStart = () => {
+        // no-op placeholder
+      };
+
+      const onTouchMove = (event: TouchEvent) => {
+        handleTouchMove(event, (x, y) => (mouse = { x, y }));
       };
 
       const onTouchEnd = () => {
@@ -98,16 +105,18 @@ const Scene = () => {
         });
       };
 
-      document.addEventListener("mousemove", (event) => {
-        onMouseMove(event);
-      });
+      document.addEventListener("mousemove", onMouseMove);
       const landingDiv = document.getElementById("landingDiv");
       if (landingDiv) {
-        landingDiv.addEventListener("touchstart", onTouchStart);
-        landingDiv.addEventListener("touchend", onTouchEnd);
+        landingDiv.addEventListener("touchstart", onTouchStart, { passive: true });
+        landingDiv.addEventListener("touchmove", onTouchMove, { passive: true });
+        landingDiv.addEventListener("touchend", onTouchEnd, { passive: true });
       }
       const animate = () => {
         requestAnimationFrame(animate);
+        if (window.scrollY > window.innerHeight * 2.5) {
+          return;
+        }
         if (headBone) {
           handleHeadRotation(
             headBone,
@@ -127,18 +136,18 @@ const Scene = () => {
       };
       animate();
       return () => {
+        isMounted = false;
         clearTimeout(debounce);
         scene.clear();
         renderer.dispose();
-        window.removeEventListener("resize", () =>
-          handleResize(renderer, camera, canvasDiv, character!)
-        );
+        window.removeEventListener("resize", onResize);
         if (canvasDiv.current) {
           canvasDiv.current.removeChild(renderer.domElement);
         }
+        document.removeEventListener("mousemove", onMouseMove);
         if (landingDiv) {
-          document.removeEventListener("mousemove", onMouseMove);
           landingDiv.removeEventListener("touchstart", onTouchStart);
+          landingDiv.removeEventListener("touchmove", onTouchMove);
           landingDiv.removeEventListener("touchend", onTouchEnd);
         }
       };

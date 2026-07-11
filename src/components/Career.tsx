@@ -5,7 +5,7 @@ const Career = () => {
     <div className="career-section section-container">
       <div className="career-container">
         <h2>
-          My career <span>&</span>
+          My career <span>&amp;</span>
           <br /> experience
         </h2>
         <div className="career-info">
@@ -15,58 +15,49 @@ const Career = () => {
           <div className="career-info-box">
             <div className="career-info-in">
               <div className="career-role">
-                <h4>Co-Founder</h4>
-                <h5>CallHQ.ai</h5>
+                <h4>Founder &amp; Core Engineer</h4>
+                <h5>Quorox Cloud</h5>
               </div>
-              <h3>NOW</h3>
+              <h3>2026–PRES</h3>
             </div>
             <p>
-              Building CallHQ.ai, a voice AI platform for
-              automating customer calls, support, and conversions.
+              High-availability VPS container virtualization platform integrating Pterodactyl daemon nodes with WHMCS automated checkout billing APIs. Scales setups down to under 10 seconds.
             </p>
           </div>
           <div className="career-info-box">
             <div className="career-info-in">
               <div className="career-role">
-                <h4>Adobe</h4>
-                <h5>6+ years · Noida</h5>
+                <h4>AI Architect</h4>
+                <h5>Skript Builder AI</h5>
               </div>
-              <h3>2017–24</h3>
+              <h3>2026–PRES</h3>
             </div>
             <p>
-              Senior Lead Software Engineer (Feb 2024 – May 2024). Lead Software
-              Engineer (Feb 2021 – Feb 2024). Software Engineer II (Dec 2017 –
-              Feb 2021): internationalization, globalization, and localization for
-              Adobe Technical Communication Suite; functional and linguistic testing
-              strategy; in-house tooling; collaboration with product and engineering
-              for high-quality localized releases.
+              Autonomous artificial intelligence platform fine-tuned to compile optimized Minecraft Skript templates, audit syntax trees, and automate Minecraft server scripts.
             </p>
           </div>
           <div className="career-info-box">
             <div className="career-info-in">
               <div className="career-role">
-                <h4>Consultant</h4>
-                <h5>Genpact Headstrong </h5>
+                <h4>Lead Systems Developer</h4>
+                <h5>Stitch Analyzer</h5>
               </div>
-              <h3>2016–17</h3>
+              <h3>2025–PRES</h3>
             </div>
             <p>
-              Sep 2016 – Nov 2017. Developed and maintained WCF services consumed
-              by the UI; deployment support across environments; NUnit tests and
-              coverage; bug fixes from QA and users; database work.
+              Double-sided anticheat engine. Combines an Electron process memory scanning launcher that audits loaded DLL registers with a Spigot/Paper Java NMS validator checking packet timing anomalies.
             </p>
           </div>
           <div className="career-info-box">
             <div className="career-info-in">
               <div className="career-role">
-                <h4>Sf Engineer</h4>
-                <h5>Infogain</h5>
+                <h4>Full-Stack Engineer</h4>
+                <h5>AutoTierList</h5>
               </div>
-              <h3>2013-16</h3>
+              <h3>2025–PRES</h3>
             </div>
             <p>
-              Software engineering across enterprise projects, contributing to
-              design, development, and delivery of business applications.
+              Automatic player rating tracking leaderboard parsing server event logs in real-time, syncing metrics with automated Discord role matrices.
             </p>
           </div>
         </div>

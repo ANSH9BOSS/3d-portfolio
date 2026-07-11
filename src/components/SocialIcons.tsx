@@ -1,8 +1,7 @@
 import {
   FaGithub,
-  FaInstagram,
-  FaLinkedinIn,
-  FaYoutube,
+  FaDiscord,
+  FaEnvelope,
 } from "react-icons/fa6";
 import "./styles/SocialIcons.css";
 import { TbNotes } from "react-icons/tb";
@@ -12,18 +11,24 @@ import HoverLinks from "./HoverLinks";
 const SocialIcons = () => {
   useEffect(() => {
     const social = document.getElementById("social") as HTMLElement;
+    if (!social) return;
+
+    const cleanups: (() => void)[] = [];
 
     social.querySelectorAll("span").forEach((item) => {
       const elem = item as HTMLElement;
       const link = elem.querySelector("a") as HTMLElement;
+      if (!link) return;
 
       const rect = elem.getBoundingClientRect();
       let mouseX = rect.width / 2;
       let mouseY = rect.height / 2;
       let currentX = 0;
       let currentY = 0;
+      let active = true;
 
       const updatePosition = () => {
+        if (!active) return;
         currentX += (mouseX - currentX) * 0.1;
         currentY += (mouseY - currentY) * 0.1;
 
@@ -47,13 +52,17 @@ const SocialIcons = () => {
       };
 
       document.addEventListener("mousemove", onMouseMove);
-
       updatePosition();
 
-      return () => {
-        elem.removeEventListener("mousemove", onMouseMove);
-      };
+      cleanups.push(() => {
+        active = false;
+        document.removeEventListener("mousemove", onMouseMove);
+      });
     });
+
+    return () => {
+      cleanups.forEach((cleanup) => cleanup());
+    };
   }, []);
 
   return (
@@ -61,48 +70,42 @@ const SocialIcons = () => {
       <div className="social-icons" data-cursor="icons" id="social">
         <span>
           <a
-            href="https://github.com/akashrmalhotra"
+            href="https://github.com/ANSH9BOSS"
             target="_blank"
             rel="noreferrer"
+            aria-label="GitHub"
           >
             <FaGithub />
           </a>
         </span>
         <span>
           <a
-            href="https://www.linkedin.com/in/akashrmalhotra/"
+            href="https://discord.com/users/ansh9boss"
             target="_blank"
             rel="noreferrer"
+            aria-label="Discord"
           >
-            <FaLinkedinIn />
+            <FaDiscord />
           </a>
         </span>
         <span>
           <a
-            href="https://www.youtube.com/@Leftbraincoder"
+            href="mailto:anshkumar19zx@gmail.com"
             target="_blank"
             rel="noreferrer"
+            aria-label="Email"
           >
-            <FaYoutube />
-          </a>
-        </span>
-        <span>
-          <a
-            href="https://www.instagram.com/leftbraincoder/"
-            target="_blank"
-            rel="noreferrer"
-          >
-            <FaInstagram />
+            <FaEnvelope />
           </a>
         </span>
       </div>
       <a
         className="resume-button"
-        href="/Akash_Malhotra.pdf"
+        href="https://github.com/ANSH9BOSS/new-portfolio/blob/main/profile.md"
         target="_blank"
         rel="noreferrer"
       >
-        <HoverLinks text="RESUME" />
+        <HoverLinks text="PROFILE" />
         <span>
           <TbNotes />
         </span>

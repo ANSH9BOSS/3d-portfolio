@@ -2,7 +2,6 @@ import * as THREE from "three";
 import { useRef, useMemo, useState, useEffect } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import { Environment } from "@react-three/drei";
-import { EffectComposer, N8AO } from "@react-three/postprocessing";
 import {
   BallCollider,
   Physics,
@@ -26,7 +25,7 @@ const textures = imageUrls.map((url) => textureLoader.load(url));
 
 const sphereGeometry = new THREE.SphereGeometry(1, 28, 28);
 
-const spheres = [...Array(30)].map(() => ({
+const spheres = [...Array(16)].map(() => ({
   scale: [0.7, 1, 0.8, 1, 1][Math.floor(Math.random() * 5)],
 }));
 
@@ -50,8 +49,9 @@ function SphereGeo({
   useFrame((_state, delta) => {
     if (!isActive) return;
     delta = Math.min(0.1, delta);
+    if (!api.current) return;
     const impulse = vec
-      .copy(api.current!.translation())
+      .copy(api.current.translation())
       .normalize()
       .multiply(
         new THREE.Vector3(
@@ -61,7 +61,7 @@ function SphereGeo({
         )
       );
 
-    api.current?.applyImpulse(impulse, true);
+    api.current.applyImpulse(impulse, true);
   });
 
   return (
@@ -130,27 +130,39 @@ const TechStack = () => {
   useEffect(() => {
     const handleScroll = () => {
       const scrollY = window.scrollY || document.documentElement.scrollTop;
-      const threshold = document
-        .getElementById("work")!
-        .getBoundingClientRect().top;
+      const workElem = document.getElementById("work");
+      if (!workElem) return;
+      const threshold = workElem.getBoundingClientRect().top;
       setIsActive(scrollY > threshold);
     };
-    document.querySelectorAll(".header a").forEach((elem) => {
-      const element = elem as HTMLAnchorElement;
-      element.addEventListener("click", () => {
-        const interval = setInterval(() => {
-          handleScroll();
-        }, 10);
-        setTimeout(() => {
-          clearInterval(interval);
-        }, 1000);
-      });
+
+    const headerLinks = document.querySelectorAll(".header a");
+    const intervals: number[] = [];
+
+    const handleLinkClick = () => {
+      const interval = setInterval(() => {
+        handleScroll();
+      }, 10);
+      intervals.push(interval);
+      setTimeout(() => {
+        clearInterval(interval);
+      }, 1000);
+    };
+
+    headerLinks.forEach((elem) => {
+      elem.addEventListener("click", handleLinkClick);
     });
+
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
+      headerLinks.forEach((elem) => {
+        elem.removeEventListener("click", handleLinkClick);
+      });
+      intervals.forEach((interval) => clearInterval(interval));
     };
   }, []);
+
   const materials = useMemo(() => {
     return textures.map(
       (texture) =>
@@ -186,7 +198,7 @@ const TechStack = () => {
           castShadow
           shadow-mapSize={[512, 512]}
         />
-        <directionalLight position={[0, 5, -4]} intensity={2} />
+        <ambientLight intensity={0.5} />
         <Physics gravity={[0, 0, 0]}>
           <Pointer isActive={isActive} />
           {spheres.map((props, i) => (
@@ -203,9 +215,6 @@ const TechStack = () => {
           environmentIntensity={0.5}
           environmentRotation={[0, 4, 2]}
         />
-        <EffectComposer enableNormalPass={false}>
-          <N8AO color="#0f002c" aoRadius={2} intensity={1.15} />
-        </EffectComposer>
       </Canvas>
     </div>
   );

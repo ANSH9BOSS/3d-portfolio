@@ -24,35 +24,48 @@ const Navbar = () => {
     smoother.paused(true);
 
     let links = document.querySelectorAll(".header ul a");
-    links.forEach((elem) => {
-      let element = elem as HTMLAnchorElement;
-      element.addEventListener("click", (e) => {
-        if (window.innerWidth > 1024) {
-          e.preventDefault();
-          let elem = e.currentTarget as HTMLAnchorElement;
-          let section = elem.getAttribute("data-href");
+    const onLinkClick = (e: Event) => {
+      if (window.innerWidth > 1024) {
+        e.preventDefault();
+        let elem = e.currentTarget as HTMLAnchorElement;
+        let section = elem.getAttribute("data-href");
+        if (section) {
           smoother.scrollTo(section, true, "top top");
         }
-      });
+      }
+    };
+
+    links.forEach((elem) => {
+      elem.addEventListener("click", onLinkClick);
     });
-    window.addEventListener("resize", () => {
+
+    const onResize = () => {
       ScrollSmoother.refresh(true);
-    });
+    };
+    window.addEventListener("resize", onResize);
+
+    return () => {
+      window.removeEventListener("resize", onResize);
+      links.forEach((elem) => {
+        elem.removeEventListener("click", onLinkClick);
+      });
+    };
   }, []);
+
   return (
     <>
       <div className="header">
         <a href="/#" className="navbar-title" data-cursor="disable">
-          AM
+          A9
         </a>
         <a
-          href="https://www.linkedin.com/in/akashrmalhotra/"
+          href="https://github.com/ANSH9BOSS"
           className="navbar-connect"
           data-cursor="disable"
           target="_blank"
           rel="noreferrer"
         >
-          linkedin.com/in/akashrmalhotra
+          github.com/ANSH9BOSS
         </a>
         <ul>
           <li>
